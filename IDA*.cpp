@@ -1,4 +1,3 @@
-//Implementation of light oj 1121
 #include <bits/stdc++.h>
 //( (grid width odd) && (#inversions even) )  ||  ( (grid width even) && ((blank on odd row from bottom) == (#inversions even)) )
 #define fwrite() freopen("out.txt","w",stdout)
