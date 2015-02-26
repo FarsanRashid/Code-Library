@@ -1,48 +1,5 @@
 //Implementation of A* for UVA problem 10181.Can not pass time limit.Use IDA*
 //#include <bits/stdc++.h>
-#include<cstdio>
-#include<sstream>
-#include<cstdlib>
-#include<cctype>
-#include<cmath>
-#include<algorithm>
-#include<set>
-#include<queue>
-#include<stack>
-#include<list>
-#include<iostream>
-#include<fstream>
-#include<numeric>
-#include<string>
-#include<vector>
-#include<cstring>
-#include<map>
-#include<iterator>
-#include<limits>
-#include<iomanip>
-#define inf 10000000
-#define Max(v) *max_element(v.begin(),v.end())
-#define Min(v) *min_element(v.begin(),v.end())
-#define inp1(x) scanf("%d",&x)
-#define inp2(x,y) scanf("%d %d",&x,&y)
-#define Unique(v) v.resize(unique(v.begin(),v.end())-v.begin())
-#define Sort(v) sort(v.begin(),v.end(),greater<int>());
-#define fread() freopen("inp.txt","r",stdin)
-#define fwrite() freopen("out.txt","w",stdout)
-#define mem(n,m) memset(n,m,sizeof n)
-int Set(int N,int pos){return N=N | (1<<pos);}
-int reset(int N,int pos){return N= N & ~(1<<pos);}
-bool check(int N,int pos){return (bool)(N & (1<<pos));}
-int cnt_leading_zero_bits(int N){return __builtin_clz(N);}
-int cnt_trailing_zero_bits(int N){return __builtin_ctz(N);}
-int cnt_no_of_bits_on(int N){return __builtin_popcount(N);}
-int mod_of_negative_number(int n,int m){return ((n%m)+m)%m;}
-// solvability of a puzzle board( (grid width odd) && (#inversions even) )  ||  ( (grid width even) && ((blank on odd row from bottom) == (#inversions even)) )
-//catalan(n+1)=(2*(2*n+1)*catalan(n))/(n+2) ... catalan(0)=1
-//priority_queue< int, vector<int>, greater<int> > PQ;// keeps in ascending order
-// bool operator < ( const node& b ) const
-
-
 using namespace std;
 
 
