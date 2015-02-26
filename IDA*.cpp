@@ -9,6 +9,7 @@ char path[50];
 bool done;
 int bound;
 
+
 int man()
 {
     int i,j,r1,c1,r2,c2;
