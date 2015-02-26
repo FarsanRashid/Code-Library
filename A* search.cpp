@@ -1,5 +1,5 @@
 //Implementation of A* for UVA problem 10181.Can not pass time limit.Use IDA*
-//#include <bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 
