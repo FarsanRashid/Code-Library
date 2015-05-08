@@ -1,0 +1,223 @@
+/*Implementation of Light Oj 1348*/
+#include <bits/stdc++.h>
+#define root 0
+using namespace std;
+
+
+int genes[30000+3],seg_tree[4*30000+3],belongs_to_chain_no[30000+3],subtree_size[30000+3],pos_in_seg_tree[30000+3];
+int LCA[30000+3][16],ptr,level[30000+3],chain_no,chain_head[30000+3],gene_seg[30000+3];
+vector<int>adjacency[30000+3];
+
+int dfs(int curnode,int parent,int depth)
+{
+    level[curnode]=depth;
+    LCA[curnode][0]=parent;
+    int i,j,k,total=0;
+    for(i=0,j=adjacency[curnode].size();i<j;i++)
+    {
+        k=adjacency[curnode][i];
+        if(k!=parent)
+        {
+            total=total+dfs(k,curnode,depth+1);
+        }
+    }
+    return subtree_size[curnode]=1+total;
+}
+
+int compute_lca(int n)
+{
+    int i,j;
+    for (j = 1; (1 << j) < n; j++)
+    {
+        for (i = 0; i < n; i++)
+        {
+            if (LCA[i][j - 1] != -1)
+            {
+                LCA[i][j] = LCA[LCA[i][j - 1]][j - 1];
+            }
+        }
+    }
+    return 0;
+}
+
+int HLD(int curnode,int prev)
+{
+    if(chain_head[chain_no]==-1)
+        chain_head[chain_no]=curnode;
+    belongs_to_chain_no[curnode]=chain_no;
+    pos_in_seg_tree[curnode]=ptr;
+    gene_seg[ptr]=genes[curnode];
+    ptr++;
+    int i,j,k,mx_subtree_size=0,special_child=-1;
+    for(i=0,j=adjacency[curnode].size();i<j;i++)
+    {
+        k=adjacency[curnode][i];
+        if(subtree_size[k]>mx_subtree_size&&k!=prev)
+        {
+            mx_subtree_size=subtree_size[k];
+            special_child=k;
+        }
+    }
+    if(special_child!=-1)
+    {
+        HLD(special_child,curnode);
+        for(i=0,j=adjacency[curnode].size();i<j;i++)
+        {
+            k=adjacency[curnode][i];
+            if(k!=prev&&k!=special_child)
+            {
+                chain_no++;
+                HLD(k,curnode);
+            }
+        }
+    }
+    return 0;
+}
+
+int make_tree(int s,int e,int node)
+{
+    if(s==e)
+        return seg_tree[node]=gene_seg[s];
+    make_tree(s,(s+e)/2,2*node);
+    make_tree((s+e)/2+1,e,2*node+1);
+    return seg_tree[node]=seg_tree[2*node]+seg_tree[2*node+1];
+}
+
+int lca_query(int p, int q)
+{
+    int tmp, log, i,next;
+    if (level[p] < level[q])
+    {
+        swap(p,q);
+    }
+    if(p==q)
+    return p;
+    log=0;
+    while(1)
+    {
+        next=log+1;
+        if((1<<next)>level[p])break;
+        log++;
+    }
+    for (i = log; i >= 0; i--)
+    {
+        if (level[p] - (1 << i) >= level[q])
+              p = LCA[p][i];
+    }
+    if (p == q)
+    return p;
+    for (i = log; i >= 0; i--)
+    {
+        if (LCA[p][i] != -1 && LCA[p][i] != LCA[q][i])
+        {
+            p = LCA[p][i];
+            q = LCA[q][i];
+        }
+    }
+    return LCA[p][0];
+}
+
+
+int query_tree(int b,int e,int i,int j,int node)
+{
+    if(b>=i&&e<=j)
+        return seg_tree[node];
+    if(b>j||e<i)
+        return 0;
+    int c=0,d=0;
+    c=query_tree(b,(b+e)/2,i,j,2*node);
+    d=query_tree((b+e)/2+1,e,i,j,2*node+1);
+    return c+d;
+}
+int query_up(int u,int v)
+{
+    if(v==u)
+        return genes[u];
+    int chain_of_u,chain_of_v,total=0;
+    while(1)
+    {
+        chain_of_u=belongs_to_chain_no[u];
+        chain_of_v=belongs_to_chain_no[v];
+        if(chain_of_u==chain_of_v)
+        {
+            total=total+query_tree(0,ptr-1,pos_in_seg_tree[v],pos_in_seg_tree[u],1);
+            break;
+        }
+        else
+        {
+            int cno=belongs_to_chain_no[u];
+            int chead=chain_head[cno];
+            total=total+query_tree(0,ptr-1,pos_in_seg_tree[chead],pos_in_seg_tree[u],1);
+            u=LCA[chead][0];
+        }
+    }
+    return total;
+}
+
+int update_tree(int b,int e,int node,int i,int val)
+{
+    int c,d;
+    if(b>i||e<i)
+        return seg_tree[node];
+    if(b==i&&e==i)
+    {
+        return seg_tree[node]=val;
+    }
+    return seg_tree[node]=update_tree(b,(b+e)/2,2*node,i,val)+update_tree((b+e)/2+1,e,2*node+1,i,val);
+}
+
+int query(int i,int j)
+{
+    int lca=lca_query(i,j);
+    int ans=0;
+    ans=query_up(i,lca);
+    ans=ans+query_up(j,lca)-genes[lca];
+    return ans;
+}
+
+int main()
+{
+    int i,j,k,m,n,T,t,q;
+    scanf("%d",&T);
+    for(t=1;t<=T;t++)
+    {
+        scanf("%d",&n);
+        for(i=0;i<n;i++)
+        {
+            adjacency[i].clear();
+            scanf("%d",&genes[i]);
+        }
+        for(i=0;i<n-1;i++)
+        {
+            scanf("%d %d",&j,&k);
+            adjacency[j].push_back(k);
+            adjacency[k].push_back(j);
+        }
+        memset(LCA,-1,sizeof(LCA));
+        dfs(root,-1,0);
+        compute_lca(n);
+        chain_no=0;
+        ptr=0;
+        memset(chain_head,-1,sizeof(chain_head));
+        HLD(root,-1);
+        make_tree(0,n-1,1);
+        scanf("%d",&q);
+        printf("Case %d:\n",t);
+        while(q--)
+        {
+            scanf("%d",&m);
+            if(m==0)
+            {
+                scanf("%d %d",&i,&j);
+                printf("%d\n",query(i,j));
+            }
+            else
+            {
+                scanf("%d %d",&i,&j);
+                genes[i]=j;
+                update_tree(0,ptr-1,1,pos_in_seg_tree[i],j);
+            }
+        }
+    }
+    return 0;
+}
