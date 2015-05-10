@@ -1,0 +1,129 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int>v[100002],cost[100002];
+int LCA[100002][18],mx[100002][18],mn[100002][18],depth[100002];
+
+int dfs(int curnode,int parent,int taka,int level)
+{
+    int i,j,k;
+    depth[curnode]=level;
+    LCA[curnode][0]=parent;
+    mx[curnode][0]=taka;
+    mn[curnode][0]=taka;
+    for(i=0,j=v[curnode].size();i<j;i++)
+    {
+        k=v[curnode][i];
+        if(k!=parent)
+            dfs(k,curnode,cost[curnode][i],level+1);
+    }
+    return 0;
+}
+
+int compute_LCA(int n)
+{
+    int i,j,k,m;
+    for(j=1;(1<<j)<=n;j++)
+    {
+        for(i=1;i<=n;i++)
+        {
+            if(LCA[i][j-1]!=-1)
+            {
+                LCA[i][j]=LCA[LCA[i][j-1]][j-1];
+            }
+            k=LCA[i][j-1];
+            m=LCA[i][j];
+            if(k==-1||m==-1)
+            {
+                mn[i][j]=10000000;
+                mx[i][j]=0;
+            }
+            else
+            {
+                mn[i][j]=min(mn[i][j-1],mn[k][j-1]);
+                mx[i][j]=max(mx[i][j-1],mx[k][j-1]);
+            }
+        }
+    }
+    return 0;
+}
+
+
+pair<int,int> query(int u,int v)
+{
+    if(depth[u]<depth[v])
+        swap(u,v);
+    int ans1=10000000,ans2=0;
+    int i,j,k;
+    k=floor(log2(depth[u]));
+    while(depth[u]!=depth[v])
+    {
+            if(depth[u]-(1<<k)>=depth[v])
+            {
+                ans1=min(ans1,mn[u][k]);
+                ans2=max(ans2,mx[u][k]);
+                u=LCA[u][k];
+            }
+            k--;
+    }
+    if(u==v)
+        return make_pair(ans1,ans2);
+    k=floor(log2(depth[v]));
+    while(k>=0)
+    {
+        if(LCA[u][k]==LCA[v][k])
+        {
+            k--;
+            continue;
+        }
+        ans1=min(ans1,mn[u][k]);
+        ans2=max(ans2,mx[u][k]);
+        u=LCA[u][k];
+        ans1=min(ans1,mn[v][k]);
+        ans2=max(ans2,mx[v][k]);
+        v=LCA[v][k];
+        k--;
+    }
+    ans1=min(ans1,mn[u][0]);
+    ans2=max(ans2,mx[u][0]);
+    ans1=min(ans1,mn[v][0]);
+    ans2=max(ans2,mx[v][0]);
+    return make_pair(ans1,ans2);
+}
+
+int main()
+{
+    int T,t,i,j,k,m,n,q;
+    pair<int,int>ans;
+    scanf("%d",&T);
+    for(t=1;t<=T;t++)
+    {
+        scanf("%d",&n);
+        for(i=1;i<=n;i++)
+        {
+            v[i].clear();
+            cost[i].clear();
+        }
+        for(i=1;i<n;i++)
+        {
+            scanf("%d %d %d",&j,&k,&m);
+            v[j].push_back(k);
+            cost[j].push_back(m);
+            v[k].push_back(j);
+            cost[k].push_back(m);
+        }
+        memset(LCA,-1,sizeof(LCA));
+        dfs(1,-1,0,0);
+        compute_LCA(n);
+        scanf("%d",&q);
+        printf("Case %d:\n",t);
+        while(q--)
+        {
+            scanf("%d %d",&i,&j);
+            ans=query(i,j);
+            printf("%d %d\n",ans.first,ans.second);
+        }
+    }
+    return 0;
+}
