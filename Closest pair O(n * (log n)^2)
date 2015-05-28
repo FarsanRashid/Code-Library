@@ -27,7 +27,6 @@ bool compare_y(point p1,point p2)
 }
 
 vector<point>v,sorted_x,tmp;
-//sorted_y;
 
 double divide_and_conquer(int beg,int en)
 {
@@ -65,17 +64,13 @@ double divide_and_conquer(int beg,int en)
     }
     mn=min(mn,band_minimum);
     return mn;
-
 }
 
 double closest_pair(int beg,int en)
 {
     sorted_x.clear();
-    //sorted_y.clear();
     sorted_x=v;
-    //sorted_y=v;
     sort(sorted_x.begin(),sorted_x.end(),compare_x);
-    //sort(sorted_y.begin(),sorted_y.end(),compare_y);
     return divide_and_conquer(beg,en);
 }
 
