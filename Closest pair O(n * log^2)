@@ -1,0 +1,107 @@
+#include <bits/stdc++.h>
+#define INFINITY 10000
+#define eps 1e-6
+using namespace std;
+
+struct point
+{
+    double x,y;
+}st1;
+
+double dist(point p1,point p2)
+{
+    return hypot(p1.x-p2.x,p1.y-p2.y);//hypot(x,y) returns sqrt(x*x+y*y);
+}
+
+bool compare_x(point p1,point p2)
+{
+    if(p1.x==p2.x)
+        return p1.y<p2.y;
+    return p1.x<p2.x;
+}
+bool compare_y(point p1,point p2)
+{
+    if(p1.y==p2.y)
+        return p1.x<p2.x;
+    return p1.y<p2.y;
+}
+
+vector<point>v,sorted_x,tmp;
+//sorted_y;
+
+double divide_and_conquer(int beg,int en)
+{
+    if(beg==en)
+        return INFINITY;
+    int md=(beg+en)/2;
+    double left_min,right_min,mn,band_minimum,d;
+    left_min=divide_and_conquer(beg,md);
+    right_min=divide_and_conquer(md+1,en);
+    mn=min(left_min,right_min);
+    int i,j,sz;
+    tmp.clear();
+    for(i=beg;i<=en;i++)
+    {
+        if(abs(sorted_x[i].x-sorted_x[md].x)<=mn)
+            tmp.push_back(sorted_x[i]);
+    }
+    sort(tmp.begin(),tmp.end(),compare_y);
+    band_minimum=INFINITY;
+    for(i=0,sz=tmp.size();i<sz;i++)
+    {
+        // This is a proven fact that this loop runs at most 6 times so overall complexity is not O(n^2),rather O(6*n) that is O(n)
+        for(j=i+1;j<sz;j++)
+        {
+            if(abs(tmp[i].y-tmp[j].y)>mn)
+            {
+                break;
+            }
+            else
+            {
+                d=dist(tmp[i],tmp[j]);
+                band_minimum=min(band_minimum,d);
+            }
+        }
+    }
+    mn=min(mn,band_minimum);
+    return mn;
+
+}
+
+double closest_pair(int beg,int en)
+{
+    sorted_x.clear();
+    //sorted_y.clear();
+    sorted_x=v;
+    //sorted_y=v;
+    sort(sorted_x.begin(),sorted_x.end(),compare_x);
+    //sort(sorted_y.begin(),sorted_y.end(),compare_y);
+    return divide_and_conquer(beg,en);
+}
+
+
+
+int main()
+{
+    int i,n;
+    double ans;
+    while(scanf("%d",&n)&&n)
+    {
+        v.clear();
+        for(i=0;i<n;i++)
+        {
+            cin>>st1.x>>st1.y;
+            v.push_back(st1);
+        }
+        ans=closest_pair(0,n-1);
+        if(ans<INFINITY)
+        {
+            printf("%.4lf\n",ans);
+        }
+        else
+        {
+            printf("INFINITY\n");
+        }
+    }
+    return 0;
+}
