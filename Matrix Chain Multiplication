@@ -1,0 +1,87 @@
+#include <bits/stdc++.h>
+#define inf 2000000000
+using namespace std;
+
+int matrix[12][2];
+int dp[12][12],path[12][12];
+bool visited[12][12];
+
+int solve(int beg,int en)
+{
+    if(beg==en)
+    {
+        path[beg][en]=beg;
+        return 0;
+    }
+    if(visited[beg][en])
+    return dp[beg][en];
+    visited[beg][en]=true;
+    int i,k=0,mx=inf;
+    for(i=beg;i<en;i++)
+    {
+        k=solve(beg,i)+solve(i+1,en)+matrix[beg][0]*matrix[i][1]*matrix[en][1];
+        if(k<mx)
+        {
+            mx=k;
+            path[beg][en]=i;
+        }
+    }
+    return dp[beg][en]=mx;
+}
+
+int print(int beg,int en)
+{
+    if(beg>en)
+        return 0;
+    if(path[beg][en]==en)
+    {
+        if(beg==en)
+        {
+            printf("A%d",path[beg][en]);
+        }
+        else
+        {
+            printf("(");
+            int i=0;
+            while(beg<=en)
+            {
+                if(i)
+                    printf(" x ");
+                else
+                    i=1;
+                printf("A",path[beg][en]);
+                beg++;
+            }
+            printf(")");
+        }
+    }
+    else
+    {
+        printf("(");
+        print(beg,path[beg][en]);
+        printf(" x ");
+        print(path[beg][en]+1,en);
+        printf(")");
+    }
+    return 0;
+}
+
+int main()
+{
+    int i,j,n,cs=0;
+    //freopen("out.txt","w",stdout);
+    while(cin>>n&&n)
+    {
+        cs++;
+        for(i=1;i<=n;i++)
+        {
+            cin>>matrix[i][0]>>matrix[i][1];
+        }
+        memset(visited,false,sizeof(visited));
+        solve(1,n);
+        printf("Case %d: ",cs);
+        print(1,n);
+        printf("\n");
+    }
+    return 0;
+}
