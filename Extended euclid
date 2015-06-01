@@ -1,0 +1,44 @@
+#include <iostream>
+
+using namespace std;
+
+long long fact[1000003];
+
+long long factorial()
+{
+    fact[0]=1;
+    fact[1]=1;
+    long long i;
+    for(i=1;i<1000003;i++)
+        fact[i]=(i*fact[i-1])%1000003;
+}
+
+/*  This function return the gcd of a and b followed
+    by the pair x and y of equation ax + by = gcd(a,b)
+*/
+pair<long long, pair<long long, long long> > extendedEuclid(long long a, long long b) {
+    if(a == 0) return make_pair(b, make_pair(0, 1));
+    pair<long long, pair<long long, long long> > p;
+    p = extendedEuclid(b % a, a);
+    return make_pair(p.first, make_pair(p.second.second - p.second.first*(b/a), p.second.first));
+}
+
+long long modInverse(long long a, long long m) {
+    return (extendedEuclid(a,m).second.first+m) % m;
+}
+
+int main()
+{
+    long long i,j,k,m,n,T,t,num,denom,inverse;
+    cin>>T;
+    factorial();
+    for(t=1;t<=T;t++)
+    {
+        cin>>n>>k;
+        num=fact[n];
+        denom=(fact[k]*fact[n-k])%1000003;
+        inverse=modInverse(denom,1000003);
+        cout<<"Case "<<t<<": "<<(num*inverse)%1000003<<endl;
+    }
+    return 0;
+}
