@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int>v;
+int n;
+
+long long int count_inversion(int beg,int en)
+{
+    if(beg>=en)
+        return 0;
+    int md;
+    md=(beg+en)/2;
+    long long int inversion_left=count_inversion(beg,md);
+    long long int inversion_right=count_inversion(md+1,en);
+    vector<int>tmp(en-beg+1);
+    long long int inversion_merge=0;
+    int i=beg,j=md+1,k=0;
+    while(i<=md&&j<=en)
+    {
+        if(v[i]<=v[j])
+        {
+            tmp[k]=v[i];
+            i++;
+        }
+        else
+        {
+            inversion_merge=inversion_merge+(md-i+1);
+            tmp[k]=v[j];
+            j++;
+        }
+        k++;
+    }
+    while(i<=md)
+    {
+        tmp[k]=v[i];
+        i++;
+        k++;
+    }
+    while(j<=en)
+    {
+        tmp[k]=v[j];
+        j++;
+        k++;
+    }
+    i=0;
+    while(beg<=en)
+    {
+        v[beg]=tmp[i];
+        i++;
+        beg++;
+    }
+    tmp.clear();
+    return inversion_left+inversion_right+inversion_merge;
+}
+
+
+int main()
+{
+    int i,j;
+    cin>>n;
+    for(i=0;i<n;i++)
+    {
+        cin>>j;
+        v.push_back(j);
+    }
+    cout<<count_inversion(0,n-1)<<endl;
+    return 0;
+}
+
