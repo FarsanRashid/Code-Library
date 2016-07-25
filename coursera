@@ -329,7 +329,13 @@ nycflights %>%
 
 ```{r highest-avg-dep-delay-month}
 # type your code for Question 4 here, and Knit
-
+#filter(origin=='NYC')
+NYC_dep<-nycflights %>% filter(origin=="LGA"|origin=="JFK"|origin=="EWR")%>%
+  group_by(month) %>% 
+  summarise(mean_dd = mean(dep_delay)) %>%
+  arrange(desc(mean_dd))
+NYC_dep
+#answer is JULY
 ```
 
 
@@ -342,9 +348,16 @@ nycflights %>%
 <li> December </li>
 </ol>
 
+
 ```{r highest-median-dep-delay-month}
 # type your code for Question 5 here, and Knit
 
+NYC_dep<-nycflights %>% filter(origin=="LGA"|origin=="JFK"|origin=="EWR")%>%
+  group_by(month) %>% 
+  summarise(median_dd = median(dep_delay)) %>%
+  arrange(desc(median_dd))
+NYC_dep
+#answer is december
 ```
 
 
@@ -357,8 +370,9 @@ avoid flying if you really dislike delayed flights, and why?
 <li> Median would be more reliable as the distribution of delays is symmetric. </li>
 <li> Both give us useful information. </li>
 </ol>
-
-
+```{r quiz6}
+#Both give us useful information.
+```
 We can also visualize the distributions of departure delays across months using 
 side-by-side box plots:
 
@@ -416,7 +430,7 @@ nycflights %>%
   arrange(desc(ot_dep_rate))
 ```
 
-**The summarise step is telling R to count up how many records of the currently found group are on time - sum(dep_type == "on timeâ) - and divide that result by the total number of elements in the currently found group - n() - to get a proportion, then to store the answer in a new variable called ot_dep_rate.**
+**The summarise step is telling R to count up how many records of the currently found group are on time - sum(dep_type == "on timeÃ¢ÂÂ) - and divide that result by the total number of elements in the currently found group - n() - to get a proportion, then to store the answer in a new variable called ot_dep_rate.**
 
 7.  If you were selecting an airport simply based on on time departure percentage, 
 which NYC airport would you choose to fly out of? 
@@ -428,7 +442,7 @@ which NYC airport would you choose to fly out of?
 
 ```{r on-time-dep-perc-airport}
 # type your code for Question 7 here, and Knit
-
+#LGA
 ```
 
 We can also visualize the distribution of on on time departure rate across 
@@ -457,6 +471,11 @@ Google this tail number to find out more about the aircraft.
 
 ```{r fastest-avg-speed-tailnum}
 # type your code for Question 8 here, and Knit
+nycflights<-nycflights %>%group_by(tailnum)%>%mutate(avg_speed = sum(distance)/ sum(air_time))
+
+nycflights%>%select(avg_speed, tailnum)%>%filter(tailnum=="N666DN"|tailnum=="N755US"|tailnum=="N779JB"|tailnum=="N947UW"|tailnum=="N959UW")
+
+
 
 ```
 
@@ -473,6 +492,9 @@ about the relationship between average speed and distance.
 
 ```{r avg-speed-dist-scatter}
 # type your code for Question 9 here, and Knit
+#nycflights
+ggplot(data = nycflights, aes(x = distance, fill = avg_speed)) +
+  geom_bar()
 
 ```
 
