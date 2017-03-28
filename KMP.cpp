@@ -4,8 +4,6 @@ using namespace std;
 
 int lps[1000002];
 // lps[i] holds length of longest proper prefix that is also proper suffix if the string had ended at index i(inclusive).
-
-int lps[1000002];
 string pattern,text;
 
 
