@@ -3,7 +3,7 @@
 using namespace std;
 
 int lps[1000002];
-// Length of longest proper prefix that is also proper suffix
+// lps[i] holds length of longest proper prefix that is also proper suffix if the string had ended at index i(inclusive).
 
 
 string pattern,text;
