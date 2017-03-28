@@ -3,6 +3,9 @@
 using namespace std;
 
 int lps[1000002];
+// Length of longest proper prefix that is also proper suffix
+
+
 string pattern,text;
 
 int compute_lps()
